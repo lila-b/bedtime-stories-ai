@@ -81,7 +81,7 @@ def poly_syllable_count(text):
 			pass
 	return count
 
-
+'''
 def flesch_kincaid_grade(text):
 	"""
 		Implements Flesch-Kincaid Grade Formula:
@@ -92,7 +92,7 @@ def flesch_kincaid_grade(text):
 	"""
 	FRE = 0.39 * float(avg_sentence_length(text)) + 11.8 * float(avg_syllables_per_word(text)) - 15.59
 	return round(FRE, 1)
-
+'''
 
 def calculate_readability_scores(text):
     sentences = len(break_sentences(text))
