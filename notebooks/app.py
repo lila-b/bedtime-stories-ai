@@ -5,26 +5,30 @@ Placeholder function will be updated with actual story generation code once comp
 """
 import gradio as gr
 from theme_violet_amber import theme as violet_amber
+from text_compile import *
 
 # Placeholder function - TO BE UPDATED
 def story(character, story_prompt):
     # INSERT CODE HERE
-    return "I will write you a story centered around " + character + ". The story will be about: " + story_prompt
+    full = "I will write you a story centered around " + character + ". The story will be about: " + story_prompt
+    return full
 
 # Gradio UI
 with gr.Blocks(theme=violet_amber) as demo:
     gr.Markdown(
     """
     # Winnie the Pooh Story Generator
-    *Simply enter a character name and a story prompt, and I will write a story form the Hundred Acre Woods for you!*
+    *Simply enter a character name and setting, then I will write a story from the Hundred Acre Woods for you!*
     """)
     textbox = gr.Textbox(label="Character Name")
-    textbox2 = gr.Textbox(label="Story Prompt")
+    textbox2 = gr.Textbox(label="Story Setting")
+    
     with gr.Row():
         button = gr.Button("Submit", variant="primary")
-        clear = gr.Button("Clear")
-        output = gr.Textbox(label="A story for you... ")
+        clear = gr.Button('Clear')
     
-    button.click(story, [textbox, textbox2], output)
+    output = gr.Textbox(label="A story for you... ")
+    
+    button.click(print_story, [textbox, textbox2], output)
 
 demo.launch()
