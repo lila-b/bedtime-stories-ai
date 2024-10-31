@@ -1,6 +1,9 @@
 import spacy
 from textstat import flesch_reading_ease, flesch_kincaid_grade
 from textstat.textstat import textstatistics
+from deepeval.test_case import LLMTestCase
+from deepeval.metrics import BaseMetric
+
 
 # Splits the text into sentences, using spacy's sentence segmentation
 def break_sentences(text):
@@ -16,6 +19,51 @@ def word_count(text):
 		words += len([token for token in sentence])
 	return words
 
+# Using textstat library to calculate syllables in a word
+def syllables_count(word):
+	return textstatistics().syllable_count(word)
+
+# Returns the average number of syllables per word in the text
+def avg_syllables_per_word(text):
+	syllable = syllables_count(text)
+	words = word_count(text)
+	ASPW = float(syllable) / float(words)
+	return round(ASPW, 1)
+
+def calculate_readability_scores(text):
+    sentences = len(break_sentences(text))
+    words = word_count(text)
+    syllables = syllables_count(text)
+
+    flesch_ease = flesch_reading_ease(text)
+    flesch_kincaid = flesch_kincaid_grade(text)
+    
+    return {
+        "Flesch Reading Ease": flesch_ease,
+        "Flesch-Kincaid Grade": flesch_kincaid,
+        "Sentence Count": sentences,
+        "Word Count": words,
+        "Syllable Count": syllables,
+        "Average Syllables per Word": avg_syllables_per_word(text)
+    }
+
+# DeepEval - define custom readability metric
+class ReadabilityMetric(BaseMetric):
+    def __init__(self, threshold_high: float = 3.0, threshold_low: float = 2.0):
+        self.threshold_high = threshold_high
+        self.threshold_low = threshold_low
+
+    def measure(self, test_case: LLMTestCase):
+        score = self.score(test_case.actual_output)
+		#return score
+        return score <= self.threshold_high and score >= self.threshold_low
+
+    def score(self, text: str) -> float:
+        # Implement your custom readability logic here
+        return calculate_readability_scores(text)["Flesch-Kincaid Grade"]
+
+
+"""
 # Returns the number of sentences in the text
 def sentence_count(text):
 	sentences = break_sentences(text)
@@ -28,16 +76,6 @@ def avg_sentence_length(text):
 	average_sentence_length = float(words / sentences)
 	return average_sentence_length
 
-# Using textstat library to calculate syllables in a word
-def syllables_count(word):
-	return textstatistics().syllable_count(word)
-
-# Returns the average number of syllables per word in the text
-def avg_syllables_per_word(text):
-	syllable = syllables_count(text)
-	words = word_count(text)
-	ASPW = float(syllable) / float(words)
-	return round(ASPW, 1)
 
 # Return total Difficult Words in a text
 def difficult_words(text):
@@ -80,33 +118,4 @@ def poly_syllable_count(text):
 		except:
 			pass
 	return count
-
-'''
-def flesch_kincaid_grade(text):
-	"""
-		Implements Flesch-Kincaid Grade Formula:
-		grade level = 0.39 * (ASL) + 11.8 * (AWL) - 15.59
-		Where,
-		ASL = average sentence length (number of words divided by number of sentences)
-		ASW = average word length in syllables (number of syllables divided by number of words)
-	"""
-	FRE = 0.39 * float(avg_sentence_length(text)) + 11.8 * float(avg_syllables_per_word(text)) - 15.59
-	return round(FRE, 1)
-'''
-
-def calculate_readability_scores(text):
-    sentences = len(break_sentences(text))
-    words = word_count(text)
-    syllables = syllables_count(text)
-
-    flesch_ease = flesch_reading_ease(text)
-    flesch_kincaid = flesch_kincaid_grade(text)
-    
-    return {
-        "Flesch Reading Ease": flesch_ease,
-        "Flesch-Kincaid Grade": flesch_kincaid,
-        "Sentence Count": sentences,
-        "Word Count": words,
-        "Syllable Count": syllables,
-        "Average Syllables per Word": avg_syllables_per_word(text)
-    }
+"""
