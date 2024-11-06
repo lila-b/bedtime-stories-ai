@@ -5,10 +5,9 @@ Placeholder function will be updated with actual story generation code once comp
 """
 import gradio as gr
 from theme_violet_amber import theme as violet_amber
-from text_compile import *
 
 # Placeholder function - TO BE UPDATED
-def story(character, story_prompt):
+def story_placeholder(character, story_prompt):
     # INSERT CODE HERE
     full = "I will write you a story centered around " + character + ". The story will be about: " + story_prompt
     return full
@@ -29,6 +28,6 @@ with gr.Blocks(theme=violet_amber) as demo:
     
     output = gr.Textbox(label="A story for you... ")
     
-    button.click(print_story, [textbox, textbox2], output)
+    button.click(story_placeholder, [textbox, textbox2], output)
 
 demo.launch()

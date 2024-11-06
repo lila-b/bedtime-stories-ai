@@ -47,6 +47,7 @@ def calculate_readability_scores(text):
         "Average Syllables per Word": avg_syllables_per_word(text)
     }
 
+
 # DeepEval - define custom readability metric
 class ReadabilityMetric(BaseMetric):
     def __init__(self, threshold_high: float = 3.0, threshold_low: float = 2.0):
@@ -59,8 +60,9 @@ class ReadabilityMetric(BaseMetric):
         return score <= self.threshold_high and score >= self.threshold_low
 
     def score(self, text: str) -> float:
-        # Implement your custom readability logic here
+        # Implement custom readability function
         return calculate_readability_scores(text)["Flesch-Kincaid Grade"]
+
 
 
 """
